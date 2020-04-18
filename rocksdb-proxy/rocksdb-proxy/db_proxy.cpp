@@ -20,8 +20,8 @@ extern "C" {
 		return 111;
 	}
 
-	void* CreateNewDB(const char* str, PtrArray* cfArray, PtrArray* ptrArray, PtrArray* pNameArr) {
-		printf("CreateNewDB:%s,%d\n", str, cfArray->len);
+	void* CreateNewDB(const char* str, CustomString** cfArray, int cfLen, PtrArray* ptrArray, PtrArray* pNameArr) {
+		printf("CreateNewDB:%s,%d\n", str, cfLen);
 		fflush(stdout);
 		DB* db = nullptr;
 		Options options;
@@ -38,11 +38,12 @@ extern "C" {
 		column_families.push_back(ColumnFamilyDescriptor(
 			kDefaultColumnFamilyName, ColumnFamilyOptions()));
 
-		for (int i = 0; i < cfArray->len; i++) {
-
+		for (int i = 0; i < cfLen; i++) {
+			std::cout << cfArray[i] << std::endl;
 			//column_families.push_back(ColumnFamilyDescriptor(
 			//	std::string(newcf), ColumnFamilyOptions()));
 		}
+		fflush(stdout);
 		// open the new one, too
 		std::vector<ColumnFamilyHandle*> handles;
 		auto s = DB::Open(options, std::string(str), column_families, &handles, &db);
