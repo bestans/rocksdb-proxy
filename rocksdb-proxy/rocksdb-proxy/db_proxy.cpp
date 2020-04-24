@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "rocksdb/db.h"
 #include <iostream>
-
+#pragma warning( disable : 4996)
 using namespace rocksdb;
 std::string kDBPath = "/tmp/rocksdb_simple_example";
 extern "C" {
@@ -20,7 +20,7 @@ extern "C" {
 		return 111;
 	}
 
-	void* CreateNewDB(const char* str, CustomString** cfArray, int cfLen, PtrArray* ptrArray, PtrArray* pNameArr) {
+	void* CreateNewDB(const char* str, char** cfArray, int* lenList, int cfLen, PtrArray* ptrArray, PtrArray* pNameArr) {
 		printf("CreateNewDB:%s,%d\n", str, cfLen);
 		fflush(stdout);
 		DB* db = nullptr;
@@ -40,8 +40,8 @@ extern "C" {
 
 		for (int i = 0; i < cfLen; i++) {
 			std::cout << cfArray[i] << std::endl;
-			//column_families.push_back(ColumnFamilyDescriptor(
-			//	std::string(newcf), ColumnFamilyOptions()));
+			column_families.push_back(ColumnFamilyDescriptor(
+				std::string(cfArray[i]), ColumnFamilyOptions()));
 		}
 		fflush(stdout);
 		// open the new one, too
@@ -54,23 +54,38 @@ extern "C" {
 			return db;
 		}
 		fflush(stdout);
-		
+
+		std::cout << "111111";
+		fflush(stdout);
 		ptrArray->ptr = (void**)malloc(sizeof(void*) * handles.size());
 		ptrArray->len = (int)handles.size();
+		std::cout << "22222222222";
+		fflush(stdout);
 		pNameArr->ptr = (void**)malloc(sizeof(void*) * handles.size());
 		pNameArr->len = (int)handles.size();
+		std::cout << "33333333";
+		fflush(stdout);
 		for (int i = 0; i < (int)handles.size(); i++) {
 			ptrArray->ptr[i] = handles[i];
 
+			std::cout << "444444444" <<handles[i]->GetName() << "," << handles[i] << std::endl;
+			fflush(stdout);
 			//handleÃû×Ö
-			auto newStr = (CustomString*)malloc(sizeof(CustomString));
-			newStr->len = sizeof(char) * handles[i]->GetName().size();
-			newStr->str = (char*)malloc(newStr->len);
-			strcpy_s(newStr->str, newStr->len, handles[i]->GetName().c_str());
+			//auto newStr = (CustomString*)malloc(sizeof(CustomString));
+			//newStr->len = sizeof(char) * handles[i]->GetName().size();
+			//newStr->str = (char*)malloc(newStr->len + 1);
+			auto newStr = (char*)malloc(sizeof(char) * handles[i]->GetName().size() + 1);
+			std::cout << "444444444aaa:" << newStr <<"," << handles[i]->GetName() << std::endl;
+			fflush(stdout);
+			std::strcpy(newStr, handles[i]->GetName().c_str());
+			std::cout << "444444444bbbb" << handles[i]->GetName() << std::endl;
+			fflush(stdout);
 			pNameArr->ptr[i] = newStr;
 			printf("cf:%s\n", handles[i]->GetName().c_str());
+			fflush(stdout);
 		}
 
+		std::cout << "55555555555";
 		fflush(stdout);
 		return db;
 	}
@@ -100,14 +115,24 @@ extern "C" {
 		fflush(stdout);
 		return s.ok();
 	}
-	bool DBColumnFamilyPut(void* pdb, void* phandle, CustomString* key, CustomString* value) {
+	bool DBColumnFamilyPutOld(void* pdb, void* phandle, CustomString* key, CustomString* value) {
 		auto db = (DB*)pdb;
 		auto handle = (ColumnFamilyHandle*)phandle;
 		auto s = db->Put(WriteOptions(), handle, std::string(key->str, key->len), std::string(value->str, value->len));
-		printf("DBColumnFamilyPut:key=%s,value=%s,ok=%d,ptr=%d\n", key, value, s.ok(), pdb);
+		printf("DBColumnFamilyPutOld:key=%s,value=%s,ok=%d,ptr=%d,handle=%ld\n", key->str, value->str, s.ok(), pdb, phandle);
 		fflush(stdout);
 		return s.ok();
 	}
+	bool DBColumnFamilyPut(DB* pdb, ColumnFamilyHandle* phandle, char* key, int keylen, char* value, int valuelen) {
+		auto s = pdb->Put(WriteOptions(), phandle,
+			std::string(key, keylen), std::string(value, valuelen));
+		if (gvalue == 1) {
+			printf("DBColumnFamilyPut:key=%*.s,value=%*.s,ok=%d,ptr=%d,handle=%ld\n", keylen, key, valuelen, value, s.ok(), pdb, phandle);
+			fflush(stdout);
+		}
+		return s.ok();
+	}
+
 
 	void ReleaseString(void* data) {
 		printf("ReleaseString,ptr=%d\n", data);
@@ -128,13 +153,26 @@ extern "C" {
 		data->data = value->c_str();
 		return data;
 	}
-	DataString* DBColumnFamilyGet(void* pdb, void* phandle, const char* key) {
+	DataString* DBColumnFamilyGetOld(void* pdb, void* phandle, CustomString* key) {
 		auto db = (DB*)pdb;
 		auto data = new DataString();
 		auto value = new std::string();
-		auto s = db->Get(ReadOptions(), std::string(key), value);
-		printf("DBGet:key=%s,value=%s,ok=%d,ptr=%d\n", key, value->c_str(), s.ok(), pdb);
+		auto s = db->Get(ReadOptions(), (ColumnFamilyHandle*)phandle, std::string(key->str, key->len), value);
+		printf("DBColumnFamilyGetOld:new:key=%s,value=%s,ok=%d,ptr=%d,handle=%d,err=%s\n", key->str, value->c_str(), s.ok(), pdb, phandle, s.ToString().c_str());
 		fflush(stdout);
+		data->strPtr = value;
+		data->len = value->length();
+		data->data = value->c_str();
+		return data;
+	}
+	DataString* DBColumnFamilyGet(DB* pdb, ColumnFamilyHandle* phandle, char* key, int keylen) {
+		auto data = new DataString();
+		auto value = new std::string();
+		auto s = pdb->Get(ReadOptions(), phandle, std::string(key, keylen), value);
+		if (gvalue == 1) {
+			printf("DBColumnFamilyGet:new:key=%*.s, key=%s,keylen=%d,value=%s,ok=%d,ptr=%d,handle=%d,err=%s\n", keylen, key, key, keylen, value->c_str(), s.ok(), pdb, phandle, s.ToString().c_str());
+			fflush(stdout);
+		}
 		data->strPtr = value;
 		data->len = value->length();
 		data->data = value->c_str();
