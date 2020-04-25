@@ -1,11 +1,11 @@
 package gorocksdb
 
 import (
+	"gorocksdb/ensure"
 	"io/ioutil"
 	"os"
 	"testing"
 
-	"github.com/facebookgo/ensure"
 )
 
 func TestCheckpoint(t *testing.T) {

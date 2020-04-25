@@ -5,7 +5,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/facebookgo/ensure"
+	"gorocksdb/ensure"
 )
 
 func TestCOWList(t *testing.T) {

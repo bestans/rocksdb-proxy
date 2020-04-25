@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/facebookgo/ensure"
+	"gorocksdb/ensure"
 )
 
 func TestOpenTransactionDb(t *testing.T) {

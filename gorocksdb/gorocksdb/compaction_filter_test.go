@@ -2,9 +2,9 @@ package gorocksdb
 
 import (
 	"bytes"
+	"gorocksdb/ensure"
 	"testing"
 
-	"github.com/facebookgo/ensure"
 )
 
 func TestCompactionFilter(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/facebookgo/ensure"
+	"gorocksdb/ensure"
 )
 
 func TestComparator(t *testing.T) {

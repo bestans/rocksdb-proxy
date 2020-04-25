@@ -3,7 +3,7 @@ package gorocksdb
 import (
 	"testing"
 
-	"github.com/facebookgo/ensure"
+	"gorocksdb/ensure"
 )
 
 // fatalAsError is used as a wrapper to make it possible to use ensure

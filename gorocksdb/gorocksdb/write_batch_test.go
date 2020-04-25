@@ -3,7 +3,7 @@ package gorocksdb
 import (
 	"testing"
 
-	"github.com/facebookgo/ensure"
+	"gorocksdb/ensure"
 )
 
 func TestWriteBatch(t *testing.T) {

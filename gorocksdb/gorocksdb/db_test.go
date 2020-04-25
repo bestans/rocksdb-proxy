@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/facebookgo/ensure"
+	"gorocksdb/ensure"
 )
 
 func TestOpenDb(t *testing.T) {

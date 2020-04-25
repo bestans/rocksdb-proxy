@@ -4,9 +4,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
-	"github.com/facebookgo/ensure"
+	"gorocksdb/ensure"
 )
 
 func TestMemoryUsage(t *testing.T) {
@@ -49,8 +47,8 @@ func TestMemoryUsage(t *testing.T) {
 
 	// the amount of memory used by memtables should increase after write/read;
 	// cache memory usage is not likely to be changed, perhaps because requested key is kept by memtable
-	assert.True(t, mu2.MemTableTotal > mu1.MemTableTotal)
-	assert.True(t, mu2.MemTableUnflushed > mu1.MemTableUnflushed)
-	assert.True(t, mu2.CacheTotal >= mu1.CacheTotal)
-	assert.True(t, mu2.MemTableReadersTotal >= mu1.MemTableReadersTotal)
+	ensure.True(t, mu2.MemTableTotal > mu1.MemTableTotal)
+	ensure.True(t, mu2.MemTableUnflushed > mu1.MemTableUnflushed)
+	ensure.True(t, mu2.CacheTotal >= mu1.CacheTotal)
+	ensure.True(t, mu2.MemTableReadersTotal >= mu1.MemTableReadersTotal)
 }

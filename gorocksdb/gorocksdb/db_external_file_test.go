@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/facebookgo/ensure"
+	"gorocksdb/ensure"
 )
 
 func TestExternalFile(t *testing.T) {
