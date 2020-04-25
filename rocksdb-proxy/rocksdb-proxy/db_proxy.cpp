@@ -127,7 +127,7 @@ extern "C" {
 		auto s = pdb->Put(WriteOptions(), phandle,
 			std::string(key, keylen), std::string(value, valuelen));
 		if (gvalue == 1) {
-			printf("DBColumnFamilyPut:key=%*.s,value=%*.s,ok=%d,ptr=%d,handle=%ld\n", keylen, key, valuelen, value, s.ok(), pdb, phandle);
+			printf("DBColumnFamilyPut:key=%.*s,value=%.*s,ok=%d,ptr=%d,handle=%ld\n", keylen, key, valuelen, value, s.ok(), pdb, phandle);
 			fflush(stdout);
 		}
 		return s.ok();
@@ -135,8 +135,10 @@ extern "C" {
 
 
 	void ReleaseString(void* data) {
-		printf("ReleaseString,ptr=%d\n", data);
-		fflush(stdout);
+		if (gvalue == 1) {
+			printf("ReleaseString,ptr=%d\n", data);
+			fflush(stdout);
+		}
 		auto pData = (DataString*)data;
 		delete (std::string*)pData->strPtr;
 		delete pData;
@@ -170,7 +172,7 @@ extern "C" {
 		auto value = new std::string();
 		auto s = pdb->Get(ReadOptions(), phandle, std::string(key, keylen), value);
 		if (gvalue == 1) {
-			printf("DBColumnFamilyGet:new:key=%*.s, key=%s,keylen=%d,value=%s,ok=%d,ptr=%d,handle=%d,err=%s\n", keylen, key, key, keylen, value->c_str(), s.ok(), pdb, phandle, s.ToString().c_str());
+			printf("DBColumnFamilyGet:new:key=%.*s, key=%s,keylen=%d,value=%s,ok=%d,ptr=%d,handle=%d,err=%s\n", keylen, key, key, keylen, value->c_str(), s.ok(), pdb, phandle, s.ToString().c_str());
 			fflush(stdout);
 		}
 		data->strPtr = value;

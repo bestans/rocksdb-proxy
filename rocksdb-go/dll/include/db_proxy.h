@@ -13,7 +13,7 @@ typedef struct {
     char* str;
     int len;
 } CustomString;
-typedef struct {
+typedef struct PtrArray {
     void* ptr;
     int len;
 } PtrArray;
@@ -23,14 +23,24 @@ typedef struct {
 } PtrStrArray;
 void Test();
 int GetValue();
-void* CreateNewDB(const char* str, CustomString** newcf, int cfLen, PtrArray* ptrArray, PtrArray* ptrNames);
+void* CreateNewDB(const char* str, char** cfArray, int* lenList, int cfLen, PtrArray* ptrArray, PtrArray* pNameArr);
 void* CreateDB(const char* str);
 int DBPut(void* db, CustomString* key, CustomString* value);
-int DBColumnFamilyPut(void* pdb, void* phandle, CustomString* key, CustomString* value);
+int DBColumnFamilyPutOld(void* pdb, void* phandle, CustomString* key, CustomString* value);
+int DBColumnFamilyPut(void* pdb, void* phandle, char* key, int keylen, char* value, int valuelen);
 DataString* DBGet(void* db, CustomString* key);
-DataString* DBColumnFamilyGet(void* pdb, void* phandle, const char* key);
+DataString* DBColumnFamilyGetOld(void* pdb, void* phandle, CustomString* key);
+DataString* DBColumnFamilyGet(void* pdb, void* phandle, char* key, int keylen);
 void ReleaseString(void* data);
-
+int pass_goptrarr(PtrArray* ptr);
+int pass_goptrarr2(PtrArray* ptr);
+int pass_goptrarr3(PtrArray* ptr);
+int pass_goptrarrarr(PtrArray* ptr);
+int pass_string(PtrArray* ptr, PtrArray* sstr, int value);
+int pass_string2(char** ptr, int* lenList, int total, PtrArray* sstr, int value);
+void SetValue(int value);
+PtrArray* pass_gogetptr();
+int pass_str_direct(char* str, int len);
 typedef struct {
     int a;
     int b;
@@ -42,7 +52,7 @@ typedef struct {
 } PtrStrNewArray;
 int pass_array(Foo **in);
 int pass_str(CustomString** in, int len);
-int pass_ptr(PtrArray* ptr);
+int pass_ptr(PtrArray* ptr, int value);
 int pass_cstringptr(PtrStrNewArray* ptr);
 
 void* MyMalloc(int size);
